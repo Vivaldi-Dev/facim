@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./facim.db"
+}
+
+model Participante {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String?  @unique
+  telefone  String?
+  createdAt DateTime @default(now())
+
+  jaGanhou  Boolean  @default(false)
+
+  brindes   Brinde[]
+}
+
+model Brinde {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  createdAt  DateTime @default(now())
+
+  participantes Participante[]
+}
