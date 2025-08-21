@@ -29,3 +29,25 @@ export const getBrindes = async (_req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const deleteBrinde = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const brinde = await prisma.brinde.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!brinde) {
+      return res.status(404).json({ error: 'Brinde não encontrado' });
+    }
+
+    await prisma.brinde.delete({
+      where: { id: Number(id) },
+    });
+
+    return res.status(200).json({ message: 'Brinde apagado com sucesso' });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
