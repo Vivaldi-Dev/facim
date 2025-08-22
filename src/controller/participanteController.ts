@@ -7,26 +7,31 @@ export const createParticipante = async (req: Request, res: Response) => {
   try {
     const { nome, email, telefone } = req.body;
 
-    if (!nome || !email || !telefone) {
-      return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+    if (!nome || !telefone) {
+      return res.status(400).json({ error: "Nome e telefone são obrigatórios" });
     }
+
     const existing = await prisma.participante.findFirst({
       where: {
         OR: [
-          { nome: nome },
-          { email: email }
+          { nome },
+          ...(email ? [{ email }] : [])
         ]
       }
     });
 
     if (existing) {
-      return res.status(400).json({ 
-        error: "Já existe um participante com esse nome ou email" 
+      return res.status(400).json({
+        error: "Já existe um participante com esse nome ou email"
       });
     }
 
     const participante = await prisma.participante.create({
-      data: { nome, email, telefone }
+      data: {
+        nome,
+        telefone,
+        email: email || null 
+      }
     });
 
     return res.status(201).json(participante);
@@ -36,6 +41,7 @@ export const createParticipante = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
+
 
 export const getParticipantes = async (_req: Request, res: Response) => {
   try {
